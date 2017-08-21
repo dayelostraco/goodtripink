@@ -1,15 +1,9 @@
 # Introduction
-My personal static website based on the [Slides 3.0.5](https://designmodo.com/slides/) framework.
+Static website for GoodTrip Ink Tattoo and Gallery using [Slides 3.1.2](https://designmodo.com/slides/) framework.
 
-[ ![Codeship Status for dayelostraco/dayelostra.co](https://app.codeship.com/projects/21857230-faee-0134-b168-721cf569a862/status?branch=master)](https://app.codeship.com/projects/211392)
+[ ![Codeship Status for dayelostraco/goodtripink](https://app.codeship.com/projects/2995e710-6833-0135-a28b-5ec5668067cc/status?branch=master)](https://app.codeship.com/projects/241240)
 
-## Branches
-To support the two different locations I am considering for my next career step, I have created two branches that contain location specific assets and content:
-
-* `charleston` - Charleston, SC
-* `sanfrancisco` - San Francisco, CA
-
-Both branches have their own Domains, S3 Hosted Website buckets, CloudFront distributions and Codeship automated deployments. However, both branches share a single Wildcard SSL Certificate that is managed in AWS Certificate Manager (id: `*.meetdayel.today`).
+Both branches have their own Domains, S3 Hosted Website buckets, CloudFront distributions and Codeship automated deployments. However, both branches share a single Wildcard SSL Certificate that is managed in AWS Certificate Manager (id: `*.goodtrip.ink`).
 
 ## Static File Structure
 
@@ -37,67 +31,36 @@ Both branches have their own Domains, S3 Hosted Website buckets, CloudFront dist
 
 ### `sanfrancisco`
 
-The static website is hosted via the S3 Bucket `meetdayel.today` with full anonymous GET access. To reduce URL length, I have also created the `www.meetdayel.today` bucket which simply redirects requests to the base `meetdayel.today` bucket. 
+The static website is hosted via the S3 Bucket `goodtrip.ink` with full anonymous GET access. To reduce URL length, I have also created the `www.goodtrip.ink` bucket which simply redirects requests to the base `goodtrip.ink` bucket. 
 
-In addition, I have created S3 buckets for `www.meetdayel.com` and `meetdayel.com` URLs that also serve as redirects to the S3 bucket hosted website for `meetdayel.today`.
+In addition, I have created S3 buckets for `www.meetdayel.com` and `meetdayel.com` URLs that also serve as redirects to the S3 bucket hosted website for `goodtrip.ink`.
 
-### `charleston`
+### `master`
 
-The static website is hosted via the S3 Bucket `dayelostra.co` with full anonymous GET access. To reduce URL length, I have also created the `www.dayelostra.co` bucket which simply redirects requests to the base `dayelostra.co` bucket. 
-
-In addition, I have created S3 buckets for `www.dayelostraco.com` and `dayelostraco.com` URLs that also serve as redirects to the S3 bucket hosted website for `dayelostra.co`.
+The static website is hosted via the S3 Bucket `goodtrip.ink` with full anonymous GET access. To reduce URL length, I have also created the `www.goodtrip.ink` bucket which simply redirects requests to the base `goodtrip.ink` bucket. 
 
 
 ## CloudFront
 
-The CloudFront distribution simply caches the contents of the `meetdayel.today` bucket across all Edge Nodes using a wildcard SSL certificate (maintained in AWS Certificate Manager) that contains the following URLs:
+The CloudFront distribution simply caches the contents of the `goodtrip.ink` bucket across all Edge Nodes using a wildcard SSL certificate (maintained in AWS Certificate Manager) that contains the following URLs:
 
-* meetdayel.today
-* *.meetdayel.today
-* meetdayel.com
-* *.meetdayel.com
-* dayelostraco.com
-* *.dayelostraco.com
-* dayelostra.co
-* *.dayelostra.co
-
-There are currently two separate CloudFront distributions to handle the two different versions of my personal site. One that is Charleston, SC based and the other that is San Francisco based. 
+* goodtrip.ink
+* *.goodtrip.ink
 
 Furthermore, CloudFront redirects all HTTP requests to the HTTPS protocol and GZips all requested content.
 
 For each distribution, the CNAMEs are configured for the URLs that will be routed to the content cache.
 
-### `sanfrancisco`
-* *.meetdayel.today
-* www.meetdayel.today
-* *.meetdayel.com
-* www.meetdayel.com
-
-### `charleston`
-* *.dayelostra.co
-* www.dayelostra.co
-* *.dayelostraco.com
-* www.dayelostraco.com
-
-
 ## Route 53 Configuration
 
 The Route 53 configuration for both versions of the statically hosted site is straight forward.
 
-### `sanfrancisco`
-* A Record for meetdayel.today to CloudFront distribution with corresponding CNAME
-* A Record for www.meetdayel.today to CloudFront distribution with corresponding CNAME
-* A Record for meetdayel.com to CloudFront distribution with corresponding CNAME
-* A Record for www.meetdayel.com to CloudFront distribution with corresponding CNAME
-
-### `charleston`
-* A Record for dayelostra.co to CloudFront distribution with corresponding CNAME
-* A Record for www.dayelostra.co to CloudFront distribution with corresponding CNAME
-* A Record for dayelostraco.com to CloudFront distribution with corresponding CNAME
-* A Record for www.dayelostraco.com to CloudFront distribution with corresponding CNAME
+### `master`
+* A Record for goodtrip.ink to CloudFront distribution with corresponding CNAME
+* A Record for www.goodtrip.ink to CloudFront distribution with corresponding CNAME
 
 ## Codeship Configuration
-There is a Codeship Deployment Pipeline for all branches that are to be published to an S3 hosted website. Currently, the `sanfrancisco` and `charleston` branches are supported and live.
+There is a Codeship Deployment Pipeline for all branches that are to be published to an S3 hosted website. Currently, the `master` branch is supported and live.
 
 You'll need to configure the following:
 * Create a new Deployment Pipeline with the Git branch name you want used.
@@ -137,13 +100,13 @@ cd ~/clone
 EXP_DATE=$(date --date="+1 week" "+'%Y-%m-%dT%H:%M:%SZ'")
 
 # Delete existing S3 Files
-aws s3 rm s3://dayelostra.co --recursive
+aws s3 rm s3://goodtrip.ink --recursive
 
 # Copy cloned files from GitHub to S3 Bucket
 # Set each file to Public-Read, expires at the EXP_DATE var and Cache-Control header to 30 days max age
-aws s3 mv ~/clone s3://dayelostra.co --exclude '.git/*' --exclude '.gitignore' --exclude 'README.md' --acl public-read --expires $EXP_DATE --cache-control max-age=604800 --recursive
+aws s3 mv ~/clone s3://goodtrip.ink --exclude '.git/*' --exclude '.gitignore' --exclude 'README.md' --acl public-read --expires $EXP_DATE --cache-control max-age=604800 --recursive
 
 # Invalidate the CloudFront cache via preview level features
-aws configure set preview.cloudfront true  
-aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_SANFRANCISCO_ID --paths /index.html /error.html /assets/img/* /assets/svg/* /assets/resume/*
+aws configure set preview.cloudfront true
+aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths index.html error.html assets/img/* assets/svg/* /index.html /error.html /assets/img/* /assets/svg/*
 ````
